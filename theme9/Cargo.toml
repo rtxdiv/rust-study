@@ -1,0 +1,8 @@
+[workspace]
+members = [
+    "crates/app",
+    "crates/app_lib"
+, "crates/logger"]
+resolver = "2"
+
+[workspace.dependencies]

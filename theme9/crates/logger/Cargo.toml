@@ -1,0 +1,10 @@
+[package]
+name = "logger"
+version = "0.1.0"
+edition = "2024"
+
+[features]
+time = ["dep:chrono"]
+
+[dependencies]
+chrono = { version = "0.4.45", features = ["alloc"], optional = true }
