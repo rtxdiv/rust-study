@@ -1,4 +1,4 @@
-// additions/theme13.png
+// additions/theme13.md
 use std::{sync::LazyLock};
 
 static GLOBAL_APP_TITLE: LazyLock<&'static str> = LazyLock::new(|| {
