@@ -1,3 +1,7 @@
+//  into_iter - передача владения
+//  iter - передача ссылки
+//  iter_mut - передача мутабельной ссылки
+
 #[derive(Debug)]
 #[allow(unused)]
 struct SensorMetric {
