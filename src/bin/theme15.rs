@@ -17,8 +17,7 @@ fn generate_critical_alerts(logs: &[ServerLog]) -> Vec<String> {
 }
 
 
-#[derive(Debug)]
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 #[allow(unused)]
 enum Filler {
     Cycle,
@@ -26,8 +25,7 @@ enum Filler {
     Value(f64)
 }
 
-#[derive(Debug)]
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 struct Limitline {
     values: Vec<Option<f64>>,
     filler: Option<Filler>
@@ -42,15 +40,13 @@ impl Limitline {
 
     }
     fn fill(&mut self, count: usize) {
-        let len = self.values.len();
-        let dif: i32 = count as i32 - len as i32;
-        if dif <= 0 { return }
+        let needed = count.saturating_sub(self.values.len());
+        if needed == 0 { return }
 
         match &self.filler {
             None => (),
             Some(Filler::Cycle) => {
-                    let tmp: Vec<Option<f64>> = self.values.iter().cycle().take(dif as usize).copied().collect();
-                    self.values.extend(tmp);
+                self.values.extend(self.values.clone().into_iter().cycle().take(needed));
             },
             Some(Filler::Last) => {
                 if let Some(last) = self.values.last() { self.values.resize(count, *last) }
@@ -60,7 +56,6 @@ impl Limitline {
     }
 }
 
-#[allow(clippy::filter_map_bool_then)]
 fn analyze_load(logs: &[ServerLog], limitline: &Limitline) {
     let mut limitline = limitline.clone();
     limitline.fill(logs.len());
@@ -68,9 +63,8 @@ fn analyze_load(logs: &[ServerLog], limitline: &Limitline) {
         .zip(limitline.values.iter())
         .enumerate()
         .filter_map(|(idx, (log, limit))| {
-            limit
-                .is_some_and(|value| log.is_online && log.cpu_usage > value)
-                .then(|| (idx, log, limit.unwrap()))
+            let value = (*limit)?;
+            (log.is_online && log.cpu_usage > value).then_some((idx, log, value))
         })
         .collect();
     draw_excess_logs(&excess_logs);
@@ -84,16 +78,15 @@ fn draw_excess_logs(data: &Vec<(usize, &ServerLog, f64)>) {
     let widht: u32 = 30;
     let step: f64 = 100.0 / widht as f64;
     
-    for row in data {
-        println!("{}", row.1.hostname);
+    for (_idx, log, limit) in data {
+        println!("{}", log.hostname);
         
         for i in 0..widht {
             let down = i as f64 * step;
             let top = (i + 1) as f64 * step;
-        
-            let current = row.1.cpu_usage;
-            let limit = row.2;
-            
+            let current = log.cpu_usage;
+            let limit = *limit;
+
             if current > down && current <= top {
                 print!("\x1b[31m██\x1b[0m");
             } else if limit > down && limit <= top {
@@ -102,7 +95,7 @@ fn draw_excess_logs(data: &Vec<(usize, &ServerLog, f64)>) {
                 print!("██");
             }
         }
-        println!(" % {}/{}", row.1.cpu_usage, row.2);
+        println!(" % {}/{}", log.cpu_usage, limit);
     }
 }
 
