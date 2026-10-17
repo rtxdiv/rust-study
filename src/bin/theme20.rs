@@ -1,8 +1,6 @@
 use std::{ops::{Deref, DerefMut}};
 use std::any::type_name_of_val;
 
-struct CoolString(String);
-
 #[derive(Debug)]
 enum DerefChain {
     Next(Box<DerefChain>),
@@ -50,6 +48,16 @@ impl DerefMut for DerefChain {
         }
     }
 }
+
+impl Drop for DerefChain {
+    fn drop(&mut self) {
+        let mut text: String = std::mem::take(self.deref_mut());
+        text.push_str("_edited - Drop владеет строкой");
+        println!("Уничтожение DerefChain: {text}");
+    }
+}
+
+struct CoolString(String);
 
 impl Deref for CoolString {
     type Target = str;
