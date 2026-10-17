@@ -27,7 +27,7 @@ impl Deref for DerefChain {
                 deref_chain.deref()
             },
             Self::Text(text) => {
-                println!("{text} ({})", type_name_of_val(&text));
+                println!("{}: {text}", type_name_of_val(&text));
                 text
             }
         }
@@ -42,7 +42,7 @@ impl DerefMut for DerefChain {
                 deref_chain.deref_mut()
             },
             DerefChain::Text(text) => {
-                println!("{text} ({})", type_name_of_val(&text));
+                println!("{}: {text}", type_name_of_val(&text));
                 text
             },
         }
@@ -51,9 +51,9 @@ impl DerefMut for DerefChain {
 
 impl Drop for DerefChain {
     fn drop(&mut self) {
-        let mut text: String = std::mem::take(self.deref_mut());
-        text.push_str("_edited - Drop владеет строкой");
-        println!("Уничтожение DerefChain: {text}");
+        let text = self.deref_mut();
+        text.push('+');
+        println!("Drop\n");
     }
 }
 
@@ -93,8 +93,9 @@ fn main() {
     chain.deref_mut().make_ascii_uppercase();
     println!("{chain:?}\n");
 
-    let owner = std::mem::replace(chain.deref_mut(), String::from("newtext"));
+    let owner: String = std::mem::replace(chain.deref_mut(), String::from("newtext"));
     println!("{chain:?}\n");
 
-    println!("Owner: {owner} ({})", type_name_of_val(&owner));
+    println!("New owner: {owner} ({})\n", type_name_of_val(&owner));
+    println!();
 }
