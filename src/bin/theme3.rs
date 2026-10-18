@@ -21,7 +21,7 @@ fn main() {
     let mut queue: VecDeque<&str> = VecDeque::from(vec!["task_1", "task_2"]);
     process_task_queue(&mut queue);
     println!();
-    
+
     // TASK 2
     let mut map: BTreeMap<u64, String> = BTreeMap::new();
     map.insert(100, String::from("Boot"));

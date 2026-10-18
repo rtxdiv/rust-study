@@ -35,13 +35,13 @@ fn main() {
     print!("Введи body: ");
     std::io::stdout().flush().unwrap();
     std::io::stdin().read_line(&mut row).unwrap();
-    
+
     let article = Article {
         title: Header("title"),
         body: row.trim()
     };
     let status = PublicationStatus::Published("github");
-    
+
     println!("{}", article.render_preview());
     println!("{:?}", status);
 }

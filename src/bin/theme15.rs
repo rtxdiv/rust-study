@@ -77,10 +77,10 @@ fn analyze_load(logs: &[ServerLog], limitline: &Limitline) {
 fn draw_excess_logs(data: &Vec<(usize, &ServerLog, f64)>) {
     let widht: u32 = 30;
     let step: f64 = 100.0 / widht as f64;
-    
+
     for (_idx, log, limit) in data {
         println!("{}", log.hostname);
-        
+
         for i in 0..widht {
             let down = i as f64 * step;
             let top = (i + 1) as f64 * step;

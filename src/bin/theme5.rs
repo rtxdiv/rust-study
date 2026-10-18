@@ -24,5 +24,5 @@ fn main() {
     println!("{}", evaluate_order(&OrderStatus::Processing { priority: 4 }));
     println!("{}", evaluate_order(&OrderStatus::Delivered { days_ago: 2 }));
     println!("{}", evaluate_order(&OrderStatus::Cancelled(String::from("out of stock"))));
-    
+
 }

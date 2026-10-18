@@ -17,7 +17,7 @@ struct MetricGenerator {
 
 impl Iterator for MetricGenerator {
     type Item = SensorMetric;
-    
+
     fn next(&mut self) -> Option<Self::Item> {
         if self.current_step >= self.max_steps { return None; }
         self.current_step += 1;
