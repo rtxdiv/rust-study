@@ -5,7 +5,7 @@ fn main() {
     let text = Arc::new(String::from("sharedtext"));
     let thread_text = Arc::clone(&text);
 
-    let handle: JoinHandle<()> = thread::Builder::new().name("nameeee".into()).spawn(move || {
+    let handle: JoinHandle<()> = thread::Builder::new().name("Worker".into()).spawn(move || {
         thread::park();
         // это небезопасно, токен может появиться раньше
         thread::sleep(Duration::from_millis(500));
