@@ -23,6 +23,7 @@ fn main() {
     let text: Arc<Mutex<String>> = Arc::new(Mutex::new(String::from("sometext")));
     thread::scope(|scope| {
         let text_ref = &text;
+        // &text (ссылка!) рализует Copy, поэтому его можно move сколько угодно
         scope.spawn(move || {
             thread::sleep(Duration::from_millis(1000));
             text_ref.clone().lock().unwrap().push_str("_thread1!");
