@@ -1,8 +1,8 @@
-use std::{sync::Arc, thread::{self, JoinHandle, Thread}, time::Duration};
+use std::{sync::{Arc, Mutex}, thread::{self, JoinHandle, Thread}, time::Duration};
 
 fn main() {
     println!("Main thread\n");
-    let text = Arc::new(String::from("shared text"));
+    let text = Arc::new(String::from("sharedtext"));
     let thread_text = Arc::clone(&text);
 
     let handle: JoinHandle<()> = thread::Builder::new().name("nameeee".into()).spawn(move || {
@@ -20,14 +20,20 @@ fn main() {
     handle.join().unwrap();
     println!();
 
-    let text = String::from("Быстрее оказалось: ");
+    let text: Arc<Mutex<String>> = Arc::new(Mutex::new(String::from("sometext")));
     thread::scope(|scope| {
         let text_ref = &text;
         scope.spawn(move || {
-            println!("{text_ref}");
+            thread::sleep(Duration::from_millis(1000));
+            text_ref.clone().lock().unwrap().push_str("_thread1!");
+            println!("thread №1 completed");
         });
         scope.spawn(move || {
-            println!("{text_ref}")
+            thread::sleep(Duration::from_millis(500));
+            text_ref.clone().lock().unwrap().push_str("_thread2!");
+            println!("thread №2 completed");
         });
-    })
+        // в thread::scope автоматичексий .join()
+    });
+    println!("-- Result: {}", text.lock().unwrap());
 }
